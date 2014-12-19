@@ -10,7 +10,9 @@ Usage
 Currently the bing.py file needs to be edited to include username and password of the account to be automated.
 
 In addition, before running the script, please install selenium web driver:
+
     pip install -U selenium
+
 This might require you to download pip from your package manager. Also the above command might need to be entered with administrator privileges.
 
 TODO
