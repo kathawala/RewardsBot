@@ -1,7 +1,7 @@
 RewardsBot
 ==========
 
-Free Bing Rewards automator built in python using selenium web driver.
+Free Bing Rewards automator built in python using selenium web driver. This is a functional WIP. Currently, most settings configuration must be done by changing variables in the program itself. I'm working on making such changes available through a text config file or through command line input/arguments
 
 
 Usage
@@ -14,6 +14,11 @@ In addition, before running the script, please install selenium web driver:
     pip install -U selenium
 
 This might require you to download pip from your package manager. Also the above command might need to be entered with administrator privileges.
+
+To use the script, download these files to some directory in your path and simply type:
+
+    bing
+    
 
 TODO
 ====
