@@ -1,46 +1,63 @@
+#!/bin/env python
+
+# A python script which makes numSearches number of searches to your Bing Account
+# without you having to lift a finger :) Might take an argument as to number of
+# searches in the future. Who knows?
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+
+# Want to replace the time.sleep calls with webdriverwait, but not yet
+#from selenium.webdriver.common.by import By
+#from selenium.webdriver.support.ui import WebDriverWait
+#from selenium.webdriver.support import expected_conditions as EC
 import time
 import os.path
+import subprocess
+import getpath
 import random
 
-# These fields need to be set before the bot can work.
-# Config file is in progress, but for now, these variables
-# must be set.
-username = 
+# Planning to take user input from command line or config file
+# but for now, these variables MUST be filled in for the bot to work
+username =
 password =
 
-
-# Specifies how many searches to do (best to put a few over the number
-# you wants as some are not counted because they might be repeat searches
-numSearches = 40
+# Default is 35 but can be changed. Usually all searches go through,
+# but just to be safe, we add 5 extra
+numSearches = 35
 
 starturl = "https://account.live.com"
+directory = getpath.get_script_dir()
+driver = webdriver.firefox()
 
-# Function which takes as many words at random out of a dictionary
-# file as specified by variable "numSearches". The dictionary file
-# is hard-coded here, but config file will allow user to choose
-# Unix users should be able to find a dictionary file in
-# the directory "/usr/share/dict/"
-def randomWords():
-    dictionary = open("/home/farhan/bin/words", "r")
+# Set up dictionary in script's path if necessary
+def setupDictionary():
+    cmd = directory + "/bing_dict.sh"
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    for line in proc.stdout:
+        print (line.decode('ascii'))
+    proc.wait()
+
+# Returns a set of "n" random words to the caller
+def getRandomWords(n):
+    dictionary = open(directory + "/words", "r")
     words = set()
     last_pos = dictionary.tell()
     rand_words = list(dictionary)
 
-    for i in range(0, numSearches):
+    for i in range(0, n):
         word = random.choice(rand_words)
         words.add(word)
 
     dictionary.seek(last_pos)
 
-    new_dict = open("/home/farhan/bin/words.bak", "w")
+    new_dict = open(directory + "/words.bak", "w")
     for line in dictionary:
         if line not in words:
             new_dict.write(line)
 
-    os.remove("/home/farhan/bin/words")
-    os.rename("/home/farhan/bin/words.bak", "/home/farhan/bin/words")
+    os.remove(directory + "/words")
+    os.rename(directory + "/words.bak", directory + "/words")
     return words
 
     
@@ -49,16 +66,10 @@ def randomWords():
 xpaths = { 'usernameBox' : ".//*[@id='i0116']",
            'pswdBox' : ".//*[@id='i0118']",
            'submit' : ".//*[@id='idSIButton9']",
-           'preferences' : ".//*[@id='account_general']/div[5]/input[6]",
+           'rewardsBox' : ".//*[@id='id_rc']",
            'search' : ".//*[@id='sb_form_q']",
            'searchButton' : ".//*[@id='sb_form_go']"
          }
-
-driver = webdriver.Firefox()
-
-# Following functions are exception-handling wrappers for
-# selenium functions. They make the driver script code easier
-# to read. 
 
 def send(xpath, value):
     try:
@@ -84,34 +95,25 @@ def clear(xpath):
         exit(1)
     elem.clear()
     
-
-# Here begins the scripted moves for the webdriver:
-
+# Authenticate Bing Rewards Account
 driver.maximize_window()
 driver.get(starturl)
-
-# Log in
 send(xpaths['usernameBox'], username)
 send(xpaths['pswdBox'], password)
 click(xpaths['submit'])
-
-# sleep needed to wait for bing authentication, really isn't too slow
-time.sleep(5)
-terms = randomWords()
-
-# Sleep needed here to ensure authentication transfers successfully
+time.sleep(10)
 driver.get("http://www.bing.com")
-time.sleep(5)
-
-# Makes sure the login did not fail. A newly created account will not have 0 points,
-# so this check should not fail if login is successful.
+time.sleep(10)
 element = driver.find_element_by_xpath(xpaths['rewardsBox'])
 if (element.text == "0"):
-    print ("Login unsuccessful. Please check your username and password")
+    print ("Login unsuccessful")
     exit(1)
 
-
+# Perform searches
+setupDictionary()
+terms = getRandomWords(numSearches)
 for i in range(0, numSearches):
     clear(xpaths['search'])
     send(xpaths['search'], terms.pop())
     click(xpaths['searchButton'])
+    time.sleep(2)
