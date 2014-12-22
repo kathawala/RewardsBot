@@ -102,6 +102,15 @@ terms = randomWords()
 # Sleep needed here to ensure authentication transfers successfully
 driver.get("http://www.bing.com")
 time.sleep(5)
+
+# Makes sure the login did not fail. A newly created account will not have 0 points,
+# so this check should not fail if login is successful.
+element = driver.find_element_by_xpath(xpaths['rewardsBox'])
+if (element.text == "0"):
+    print ("Login unsuccessful. Please check your username and password")
+    exit(1)
+
+
 for i in range(0, numSearches):
     clear(xpaths['search'])
     send(xpaths['search'], terms.pop())
