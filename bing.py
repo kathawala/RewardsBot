@@ -25,7 +25,7 @@ numSearches = 35
 
 starturl = "https://account.live.com"
 directory = getpath.get_script_dir()
-driver = webdriver.firefox()
+driver = webdriver.Firefox()
 
 # Set up dictionary in script's path if necessary
 def setupDictionary():
