@@ -7,6 +7,8 @@ Free Bing Rewards automator built in python using selenium web driver. This is a
 Usage
 =====
 
+Requirements: Firefox (adding Chrome support soon), python3, pip
+
 Currently the bing.py file needs to be edited to include username and password of the account to be automated.
 
 In addition, before running the script, please install selenium web driver:
