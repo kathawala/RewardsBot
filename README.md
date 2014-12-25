@@ -19,7 +19,9 @@ This might require you to download pip from your package manager. Also the above
 
 To use the script, download these files to some directory in your path and simply type:
 
-    bing //if on an environment with both python2 and python3 (like Mac OS X) type "python3 bing"
+    bing
+    
+If running in an environment with both python2 and python3 installed (like Mac OS X) type "python3 bing" instead.
 
 
 TODO
