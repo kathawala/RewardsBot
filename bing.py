@@ -102,9 +102,6 @@ time.sleep(10)
 driver.get("http://www.bing.com")
 time.sleep(10)
 element = driver.find_element_by_xpath(xpaths['rewardsBox'])
-if (element.text == "0"):
-    print ("Login unsuccessful")
-    exit(1)
 
 # Perform searches
 setupDictionary()
