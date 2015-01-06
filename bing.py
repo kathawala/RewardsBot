@@ -100,8 +100,7 @@ send(xpaths['pswdBox'], password)
 click(xpaths['submit'])
 time.sleep(10)
 driver.get("http://www.bing.com")
-time.sleep(10)
-element = driver.find_element_by_xpath(xpaths['rewardsBox'])
+time.sleep(5)
 
 # Perform searches
 setupDictionary()
