@@ -13,19 +13,25 @@ import os.path
 import subprocess
 import getpath
 import random
+import argparse
 
-# Planning to take user input from command line or config file
-# but for now, these variables MUST be filled in for the bot to work
-username =
-password =
+# Argument parsing done here. Arguments accepted are username and password.
+parser = argparse.ArgumentParser()
+parser.add_argument("uname")
+parser.add_argument("pswd")
+args = parser.parse_args()
+username = args.uname
+password = args.pswd
 
 # Default is 35 but can be changed. Usually all searches go through,
 # but just to be safe, we add 5 extra
 numSearches = 35
+numMobileSearches = 20
 
 starturl = "https://account.live.com"
 directory = getpath.get_script_dir()
-driver = webdriver.Firefox()
+# ua_string used to spoof mobile browser
+ua_string = "Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko)"
 
 # Set up dictionary in script's path if necessary
 def setupDictionary():
@@ -65,8 +71,11 @@ xpaths = { 'usernameBox' : ".//*[@id='i0116']",
            'submit' : ".//*[@id='idSIButton9']",
            'rewardsBox' : ".//*[@id='id_rc']",
            'search' : ".//*[@id='sb_form_q']",
-           'searchButton' : ".//*[@id='sb_form_go']"
+           'searchButton' : ".//*[@id='sb_form_go']",
+           'searchButtonMobile' : ".//*[@id='sbBtn']"
          }
+         
+driver = webdriver.Firefox()
 
 def send(xpath, value):
     try:
@@ -93,16 +102,18 @@ def clear(xpath):
     elem.clear()
     
 # Authenticate Bing Rewards Account
-driver.maximize_window()
-driver.get(starturl)
-send(xpaths['usernameBox'], username)
-send(xpaths['pswdBox'], password)
-click(xpaths['submit'])
-time.sleep(10)
-driver.get("http://www.bing.com")
-time.sleep(5)
+def login(driver):
+    driver.maximize_window()
+    driver.get(starturl)
+    send(xpaths['usernameBox'], username)
+    send(xpaths['pswdBox'], password)
+    click(xpaths['submit'])
+    time.sleep(5)
+    driver.get("http://www.bing.com")
+    time.sleep(5)
 
-# Perform searches
+# Perform web searches
+login(driver)
 setupDictionary()
 terms = getRandomWords(numSearches)
 for i in range(0, numSearches):
@@ -110,3 +121,20 @@ for i in range(0, numSearches):
     send(xpaths['search'], terms.pop())
     click(xpaths['searchButton'])
     time.sleep(2)
+driver.close()
+
+# set up mobile browser
+profile = webdriver.FirefoxProfile()
+profile.set_preference("general.useragent.override", ua_string)
+driver = webdriver.Firefox(profile)
+
+# perform mobile searches
+login(driver)
+mobileTerms = getRandomWords(numMobileSearches)
+for j in range(numMobileSearches):
+    clear(xpaths['search'])
+    send(xpaths['search'], mobileTerms.pop())
+    if j > 0:
+        click(xpaths['searchButton'])
+    time.sleep(2)
+driver.close()
