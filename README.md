@@ -1,7 +1,7 @@
 RewardsBot
 ==========
 
-Free Bing Rewards automator built in python using selenium web driver. This is a functional WIP. Currently, most settings configuration must be done by changing variables in the program itself. I'm working on making such changes available through a text config file or through command line input/arguments
+Free Bing Rewards automator built in python using selenium web driver. This is a functional WIP. Currently, it takes arguments such as a username and password (to allow for you to run multiple accounts in a single script). Number of searches is guaranteed to give maximum points daily.
 
 
 Usage
@@ -9,26 +9,27 @@ Usage
 
 Requirements: Firefox (adding Chrome support soon), python3, pip
 
-Currently the bing.py file needs to be edited to include username and password of the account to be automated.
-
-In addition, before running the script, please install selenium web driver:
+Before running the script, please install selenium web driver:
 
     pip install -U selenium
 
 This might require you to download pip from your package manager. Also the above command might need to be entered with administrator privileges.
 
-To use the script, download these files to some directory in your path and simply type:
+To use the script, type the command:
 
-    bing
+    python bing.py <username> <password>
     
-If running in an environment with both python2 and python3 installed (like Mac OS X) type "python3 bing" instead.
+If you like, you can make the script executable by going to the directory "bing.py" is stored in and typing (with admin privileges if necessary):
+
+    chmod +x bing.py
+    bing.py <username> <password>
+    
+If running in an environment with both python2 and python3 installed (like Mac OS X) type "python3 bing.py" instead.
 
 
 TODO
 ====
 
-I am planning to add a text file for configuration (using configparser). I would also like to allow the user to send arguments and use options. For instance, making the number of Searches an option and having an argument be the username (then password could be sent using getpass).
+Would be nice to make this cross-platform and cross-browser (would be very easy to make this Chrome usable but I haven't got around to it).
 
-Instead of arguments, I would be open to user input dialogs, for instance a prompt asking "How many searches would you like to do?" and then using the user's input in the program.
-
-Ideally, if called with no arguments or options, the program should default to config file information. If called with arguments or options, the program should use those to override the config file information.
+I am planning to add a text file for configuration (using configparser). Would also like to accept the password without showing it on the screen (getpass?).
