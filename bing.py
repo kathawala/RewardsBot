@@ -27,6 +27,8 @@ password = args.pswd
 # but just to be safe, we add 5 extra
 numSearches = 35
 numMobileSearches = 20
+auth_pause = 5
+search_pause = 2
 
 starturl = "https://account.live.com"
 directory = getpath.get_script_dir()
@@ -108,9 +110,9 @@ def login(driver):
     send(xpaths['usernameBox'], username)
     send(xpaths['pswdBox'], password)
     click(xpaths['submit'])
-    time.sleep(5)
+    time.sleep(auth_pause)
     driver.get("http://www.bing.com")
-    time.sleep(5)
+    time.sleep(auth_pause)
 
 # Perform web searches
 login(driver)
@@ -120,7 +122,7 @@ for i in range(0, numSearches):
     clear(xpaths['search'])
     send(xpaths['search'], terms.pop())
     click(xpaths['searchButton'])
-    time.sleep(2)
+    time.sleep(search_pause)
 driver.close()
 
 # set up mobile browser
@@ -136,5 +138,5 @@ for j in range(numMobileSearches):
     send(xpaths['search'], mobileTerms.pop())
     if j > 0:
         click(xpaths['searchButton'])
-    time.sleep(2)
+    time.sleep(search_pause)
 driver.close()
