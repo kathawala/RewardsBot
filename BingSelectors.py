@@ -10,18 +10,17 @@ xpath = { 'signInLink': "//div[contains(@class, 'msame_unauth')]",
           # For these the month and year needs to be set at runtime
           'searchLink': "//*[@id='offer-evergreen_ENUS_search_level2_PC_NOV17']",
           'searchLinkMobile': "//*[@id='offer-evergreen_ENUS_search_level2_Mobile_NOV17']",
-          'startQuizButton': "//*[@id='rqStartQuiz']"
+          'startQuizButton': "//*[@id='rqStartQuiz']",
+          'quizOption0': "//*[@id='rqAnswerOption0']",
+          'quizOption1': "//*[@id='rqAnswerOption1']",
+          'quizOption2': "//*[@id='rqAnswerOption2']",
+          'quizOption3': "//*[@id='rqAnswerOption3']",
+
+          # Scrub all the elements which aren't visible using
+          # https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+          # Then, the Titles and NextToCheckmarks should be 1-to-1
+          # (i.e. T[0] corresponds to NTC[0])
+          'rewardsHomeCardTitle': "//div[contains(@class, 'offer-card')]/div/div[contains(@class, 'card-padding')]/div[contains(@class, 'offer-title-height')]",
+          'rewardsHomeCardPoints': "//*[contains(@class, 'card-button-line-height') and contains(@class, 'margin-right-15')]",
+          'rewardsHomeCardCheckmarkOrChevron': "//*[contains(@class, 'card-button-line-height') and contains(@class, 'margin-right-15')]/following-sibling::span"
          }
-
-
-css = {
-    'rewardsHomeCard': ".offer-card",
-    'rewardsHomeTitle': "div.offer-card>div>div.card-padding>div.offer-title-height",
-    'rewardsHomeDesc': "div.offer-card>div>div.card-padding>div.offer-description-height",
-    # Already done marker (if you find this under parent, it's already done)
-    'rewardsHomeCardDone': ".win-icon-CheckMark",
-
-
-    'searchLink': "#offer-evergreen_ENUS_search_level2_PC_NOV17",
-    'searchLinkMobile': ".offer-evergreen_ENUS_search_level2_Mobile_NOV17"
-}

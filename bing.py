@@ -88,6 +88,60 @@ def login():
     click(xpath['submit'])
     time.sleep(auth_pause)
 
+def solveQuiz(num_points):
+    num_questions = num_points/10
+    for i in range(0,num_questions):
+        for j in range(0,4):
+            quizOptionElements = getQuizOptionElements()
+            quizOptionElements[j].click()
+            time.sleep(search_pause)
+
+def getQuizOptionElements():
+    elements = []
+    for i in range(0,4):
+        key = 'quizOption'+str(i)
+        elements.append(driver.find_element_by_xpath(xpath[key]))
+    return elements
+
+def getOfferPoints():
+    allOfferCardTitles = driver.find_elements_by_xpath(xpath['rewardsHomeCardTitle'])
+    
+    allOfferCardStatuses = driver.find_elements_by_xpath(xpath['rewardsHomeCardCheckmarkOrChevron'])
+    allVisibleOfferCardStatuses = [x for x in allOfferCardStatuses if x.is_displayed()]
+
+    allOfferCardPoints = driver.find_elements_by_xpath(xpath['rewardsHomeCardPoints'])
+    allVisibleOfferCardPoints = [x for x in allOfferCardPoints if x.is_displayed()]
+    
+    for i in range(0,len(allVisibleOfferCardStatuses)):
+        elem = allVisibleOfferCardStatuses[i]
+        print(elem.get_attribute("class"))
+        if "mee-icon-ChevronRight" in elem.get_attribute("class"):
+            title_elem = allOfferCardTitles[i]
+
+            # Got to clean this up
+            if "Quiz" in title_elem.text:
+                elem.click()
+                time.sleep(search_pause)
+                curr_tab = driver.window_handles[0]
+                new_tab = driver.window_handles[-1]
+                driver.switch_to_window(new_tab)
+                num_points = allVisibleOfferCardPoints[i].text.replace(' POINTS','')
+                solveQuiz(num_points)
+                driver.close()
+                driver.switch_to_window(curr_tab)
+                getOfferPoints()
+                return
+            else:
+                elem.click()
+                time.sleep(search_pause)
+                curr_tab = driver.window_handles[0]
+                new_tab = driver.window_handles[-1]
+                driver.switch_to_window(new_tab)
+                driver.close()
+                driver.switch_to_window(curr_tab)
+                getOfferPoints()
+                return
+    
 def visitPCSearchPage():
     click(xpath['searchLink'])
     time.sleep(auth_pause/2)
@@ -114,15 +168,17 @@ terms = getRandomQueries(numSearches+numMobileSearches)
 # Perform PC searches
 driver = webdriver.Firefox()
 login()
-visitPCSearchPage()
-doSearches(numSearches, terms)
+getOfferPoints()
 driver.close()
+# visitPCSearchPage()
+# doSearches(numSearches, terms)
+# driver.close()
 
-# Perform Mobile searches
-profile = webdriver.FirefoxProfile()
-profile.set_preference("general.useragent.override", ua_string)
-driver = webdriver.Firefox(profile)
-login()
-visitMobileSearchPage()
-doSearches(numMobileSearches, terms)
-driver.close()
+# # Perform Mobile searches
+# profile = webdriver.FirefoxProfile()
+# profile.set_preference("general.useragent.override", ua_string)
+# driver = webdriver.Firefox(profile)
+# login()
+# visitMobileSearchPage()
+# doSearches(numMobileSearches, terms)
+# driver.close()
