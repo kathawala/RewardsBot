@@ -18,8 +18,8 @@ from selenium.common.exceptions import NoSuchElementException
 #from selenium.webdriver.support import expected_conditions as EC
 from BingSelectors import xpath
 
-numSearches = 30
-numMobileSearches = 20
+numSearches = 0
+numMobileSearches = 4
 auth_pause = 10
 search_pause = 5
 
@@ -114,7 +114,6 @@ def getOfferPoints():
     
     for i in range(0,len(allVisibleOfferCardStatuses)):
         elem = allVisibleOfferCardStatuses[i]
-        print(elem.get_attribute("class"))
         if "mee-icon-ChevronRight" in elem.get_attribute("class"):
             title_elem = allOfferCardTitles[i]
 
@@ -166,12 +165,15 @@ def doSearches(num_searches, search_queries):
 terms = getRandomQueries(numSearches+numMobileSearches)
 
 # Perform PC searches
-driver = webdriver.Firefox()
-login()
-getOfferPoints()
-visitPCSearchPage()
-doSearches(numSearches, terms)
-driver.close()
+# driver = webdriver.Firefox()
+# login()
+# getOfferPoints()
+# visitPCSearchPage()
+# doSearches(numSearches, terms)
+# driver.close()
+# curr_tab = driver.window_handles[0]
+# driver.switch_to_window(curr_tab)
+# driver.close()
 
 # Perform Mobile searches
 profile = webdriver.FirefoxProfile()
