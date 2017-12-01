@@ -7,9 +7,9 @@ xpath = { 'signInLink': "//div[contains(@class, 'msame_unauth')]",
           'searchButton': ".//*[@id='sb_form_go']",
           'searchButtonMobile': ".//*[@id='sbBtn']",
 
-          # For these the month and year needs to be set at runtime
-          'searchLink': "//*[@id='offer-evergreen_ENUS_search_level2_PC_NOV17']",
-          'searchLinkMobile': "//*[@id='offer-evergreen_ENUS_search_level2_Mobile_NOV17']",
+          # Find a better, more portable way to describe this xpath
+          'searchLink': "//*[@id='offer-evergreen_ENUS_search_level2_PC_DEC17']",
+          'searchLinkMobile': "//*[@id='offer-evergreen_ENUS_search_level2_Mobile_DEC17']",
           'startQuizButton': "//*[@id='rqStartQuiz']",
           'quizOption0': "//*[@id='rqAnswerOption0']",
           'quizOption1': "//*[@id='rqAnswerOption1']",
