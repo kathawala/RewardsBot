@@ -89,12 +89,16 @@ def login():
     time.sleep(auth_pause)
 
 def solveQuiz(num_points):
-    num_questions = num_points/10
+    num_questions = num_points//10
     for i in range(0,num_questions):
         for j in range(0,4):
             quizOptionElements = getQuizOptionElements()
-            quizOptionElements[j].click()
-            time.sleep(search_pause)
+            if quizOptionElements[j].is_displayed():
+                
+                quizOptionElements[j].click()
+                time.sleep(search_pause)
+            else:
+                return
 
 def getQuizOptionElements():
     elements = []
@@ -119,13 +123,14 @@ def getOfferPoints():
 
             # Got to clean this up
             if "Quiz" in title_elem.text:
+                num_points_str = allVisibleOfferCardPoints[i].text.replace(' POINTS','')
                 elem.click()
                 time.sleep(search_pause)
                 curr_tab = driver.window_handles[0]
                 new_tab = driver.window_handles[-1]
                 driver.switch_to_window(new_tab)
-                num_points = allVisibleOfferCardPoints[i].text.replace(' POINTS','')
-                solveQuiz(num_points)
+
+                solveQuiz(int(num_points_str))
                 driver.close()
                 driver.switch_to_window(curr_tab)
                 getOfferPoints()
@@ -165,15 +170,15 @@ def doSearches(num_searches, search_queries):
 terms = getRandomQueries(numSearches+numMobileSearches)
 
 # Perform PC searches
-# driver = webdriver.Firefox()
-# login()
-# getOfferPoints()
-# visitPCSearchPage()
-# doSearches(numSearches, terms)
-# driver.close()
-# curr_tab = driver.window_handles[0]
-# driver.switch_to_window(curr_tab)
-# driver.close()
+driver = webdriver.Firefox()
+login()
+getOfferPoints()
+visitPCSearchPage()
+doSearches(numSearches, terms)
+driver.close()
+curr_tab = driver.window_handles[0]
+driver.switch_to_window(curr_tab)
+driver.close()
 
 # Perform Mobile searches
 profile = webdriver.FirefoxProfile()
