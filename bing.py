@@ -172,7 +172,7 @@ terms = getRandomQueries(numSearches+numMobileSearches)
 # Perform PC searches
 driver = webdriver.Firefox()
 login()
-getOfferPoints()
+# getOfferPoints()
 visitPCSearchPage()
 doSearches(numSearches, terms)
 driver.close()
