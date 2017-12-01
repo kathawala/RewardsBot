@@ -18,8 +18,8 @@ from selenium.common.exceptions import NoSuchElementException
 #from selenium.webdriver.support import expected_conditions as EC
 from BingSelectors import xpath
 
-numSearches = 0
-numMobileSearches = 4
+numSearches = 30
+numMobileSearches = 20
 auth_pause = 10
 search_pause = 5
 

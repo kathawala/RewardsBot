@@ -22,5 +22,5 @@ xpath = { 'signInLink': "//div[contains(@class, 'msame_unauth')]",
           # (i.e. T[0] corresponds to NTC[0])
           'rewardsHomeCardTitle': "//div[contains(@class, 'offer-card')]/div/div[contains(@class, 'card-padding')]/div[contains(@class, 'offer-title-height')]",
           'rewardsHomeCardPoints': "//*[contains(@class, 'card-button-line-height') and contains(@class, 'margin-right-15')]",
-          'rewardsHomeCardCheckmarkOrChevron': "//*[contains(@class, 'card-button-line-height') and contains(@class, 'margin-right-15')]/following-sibling::span"
+          'rewardsHomeCardCheckmarkOrChevron': "//div[contains(@class, 'offer-card-button-background')]/span/span[contains(@class, 'card-button-line-height') and contains(@class, 'margin-right-15')]/following-sibling::span"
          }
