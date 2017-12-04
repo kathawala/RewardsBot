@@ -122,14 +122,14 @@ def getOfferPoints():
             title_elem = allOfferCardTitles[i]
 
             # Got to clean this up
-            if "Quiz" in title_elem.text:
+            if "Quiz" in title_elem.text or "quiz" in title_elem.text:
                 num_points_str = allVisibleOfferCardPoints[i].text.replace(' POINTS','')
                 elem.click()
                 time.sleep(search_pause)
                 curr_tab = driver.window_handles[0]
                 new_tab = driver.window_handles[-1]
                 driver.switch_to_window(new_tab)
-
+                click(xpath['startQuizButton'])
                 solveQuiz(int(num_points_str))
                 driver.close()
                 driver.switch_to_window(curr_tab)
@@ -172,7 +172,7 @@ terms = getRandomQueries(numSearches+numMobileSearches)
 # Perform PC searches
 driver = webdriver.Firefox()
 login()
-# getOfferPoints()
+getOfferPoints()
 visitPCSearchPage()
 doSearches(numSearches, terms)
 driver.close()
