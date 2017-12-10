@@ -4,18 +4,25 @@
 # without you having to lift a finger :) Might take an argument as to number of
 # searches in the future. Who knows?
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-
-# Want to replace the time.sleep calls with webdriverwait, but not yet
 import time
-import os.path
-import subprocess
-import getpath
+import os
 import random
 import argparse
+import getpath
 
-# Argument parsing done here. Arguments accepted are username and password.
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+# Want to replace the time.sleep calls with webdriverwait, but not yet
+#from selenium.webdriver.common.by import By
+#from selenium.webdriver.support.ui import WebDriverWait
+#from selenium.webdriver.support import expected_conditions as EC
+from BingSelectors import xpath
+
+numSearches = 30
+numMobileSearches = 20
+auth_pause = 10
+search_pause = 5
+
 parser = argparse.ArgumentParser()
 parser.add_argument("uname")
 parser.add_argument("pswd")
@@ -23,120 +30,161 @@ args = parser.parse_args()
 username = args.uname
 password = args.pswd
 
-# Default is 35 but can be changed. Usually all searches go through,
-# but just to be safe, we add 5 extra
-numSearches = 35
-numMobileSearches = 20
-auth_pause = 5
-search_pause = 2
-
-starturl = "https://account.live.com"
+starturl = "https://account.microsoft.com/rewards/dashboard"
 directory = getpath.get_script_dir()
-# ua_string used to spoof mobile browser
-ua_string = "Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko)"
 
-# Set up dictionary in script's path if necessary
-def setupDictionary():
-    cmd = directory + "/bing_dict.sh"
-    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    for line in proc.stdout:
-        print (line.decode('ascii'))
-    proc.wait()
+# should be a config option to set this
+ua_string = "Mozilla/5.0 (Android 5.0.1; Mobile; rv:58.0) Gecko/58.0 Firefox/58.0"
 
-# Returns a set of "n" random words to the caller
-def getRandomWords(n):
-    dictionary = open(directory + "/words", "r")
-    words = set()
-    last_pos = dictionary.tell()
-    rand_words = list(dictionary)
 
-    for i in range(0, n):
-        word = random.choice(rand_words)
-        words.add(word)
+def getRandomQueries(num_queries):
+    with open(os.path.join(directory, "queries"), "r") as query_txtfile:
+        all_words = list(query_txtfile)
 
-    dictionary.seek(last_pos)
+    queries = set()
+    while len(queries) < num_queries:
+        queries.add(random.choice(all_words).rstrip())
+    return queries
 
-    new_dict = open(directory + "/words.bak", "w")
-    for line in dictionary:
-        if line not in words:
-            new_dict.write(line)
-
-    os.remove(directory + "/words")
-    os.rename(directory + "/words.bak", directory + "/words")
-    return words
-
-    
-# Found by opening up firefox, using the developer console (F12) and clicking
-# on elements. Must have firebug and firepath add-ons installed to do this.
-xpaths = { 'usernameBox' : ".//*[@id='i0116']",
-           'pswdBox' : ".//*[@id='i0118']",
-           'submit' : ".//*[@id='idSIButton9']",
-           'rewardsBox' : ".//*[@id='id_rc']",
-           'search' : ".//*[@id='sb_form_q']",
-           'searchButton' : ".//*[@id='sb_form_go']",
-           'searchButtonMobile' : ".//*[@id='sbBtn']"
-         }
-         
-driver = webdriver.Firefox()
-
+# Make a "Driver" class to fit these into
 def send(xpath, value):
     try:
         elem = driver.find_element_by_xpath(xpath)
     except NoSuchElementException:
-        print ("Couldn't find element specified by xpath: {x}".format(x=xpath))
-        exit(1)
+        print("Couldn't find element specified by xpath: {x}".format(x=xpath))
     elem.send_keys(value)
 
 def click(xpath):
     try:
         elem = driver.find_element_by_xpath(xpath)
     except NoSuchElementException:
-        print ("Couldn't find element specified by xpath: {x}".format(x=xpath))
-        exit(1)
+        print("Couldn't find element specified by xpath: {x}".format(x=xpath))
+    elem.click()
+
+def clickCSS(selector):
+    try:
+        elem = driver.find_element_by_css_selector(selector)
+    except NoSuchElementException:
+        print("Couldn't find element specified by css selector: {x}".format(x=selector))
     elem.click()
 
 def clear(xpath):
     try:
         elem = driver.find_element_by_xpath(xpath)
     except NoSuchElementException:
-        print ("Couldn't find element specified by xpath: {x}".format(x=xpath))
-        exit(1)
+        print("Couldn't find element specified by xpath: {x}".format(x=xpath))
     elem.clear()
-    
+
 # Authenticate Bing Rewards Account
-def login(driver):
+def login():
     driver.maximize_window()
     driver.get(starturl)
-    send(xpaths['usernameBox'], username)
-    send(xpaths['pswdBox'], password)
-    click(xpaths['submit'])
-    time.sleep(auth_pause)
-    driver.get("http://www.bing.com")
+    click(xpath['signInLink'])
+    time.sleep(auth_pause/2)
+    send(xpath['usernameBox'], username)
+    click(xpath['submit'])
+    time.sleep(auth_pause/4)
+    send(xpath['pswdBox'], password)
+    click(xpath['submit'])
     time.sleep(auth_pause)
 
-# Perform web searches
-login(driver)
-setupDictionary()
-terms = getRandomWords(numSearches)
-for i in range(0, numSearches):
-    clear(xpaths['search'])
-    send(xpaths['search'], terms.pop())
-    click(xpaths['searchButton'])
-    time.sleep(search_pause)
+def solveQuiz(num_points):
+    num_questions = num_points//10
+    for i in range(0,num_questions):
+        for j in range(0,4):
+            quizOptionElements = getQuizOptionElements()
+            if quizOptionElements[j].is_displayed():
+                
+                quizOptionElements[j].click()
+                time.sleep(search_pause)
+            else:
+                return
+
+def getQuizOptionElements():
+    elements = []
+    for i in range(0,4):
+        key = 'quizOption'+str(i)
+        elements.append(driver.find_element_by_xpath(xpath[key]))
+    return elements
+
+def getOfferPoints():
+    allOfferCardTitles = driver.find_elements_by_xpath(xpath['rewardsHomeCardTitle'])
+    
+    allOfferCardStatuses = driver.find_elements_by_xpath(xpath['rewardsHomeCardCheckmarkOrChevron'])
+    allVisibleOfferCardStatuses = [x for x in allOfferCardStatuses if x.is_displayed()]
+
+    allOfferCardPoints = driver.find_elements_by_xpath(xpath['rewardsHomeCardPoints'])
+    allVisibleOfferCardPoints = [x for x in allOfferCardPoints if x.is_displayed()]
+    
+    for i in range(0,len(allVisibleOfferCardStatuses)):
+        elem = allVisibleOfferCardStatuses[i]
+        if "mee-icon-ChevronRight" in elem.get_attribute("class"):
+            title_elem = allOfferCardTitles[i]
+
+            # Got to clean this up
+            if "Quiz" in title_elem.text or "quiz" in title_elem.text:
+                num_points_str = allVisibleOfferCardPoints[i].text.replace(' POINTS','')
+                elem.click()
+                time.sleep(search_pause)
+                curr_tab = driver.window_handles[0]
+                new_tab = driver.window_handles[-1]
+                driver.switch_to_window(new_tab)
+                click(xpath['startQuizButton'])
+                solveQuiz(int(num_points_str))
+                driver.close()
+                driver.switch_to_window(curr_tab)
+                getOfferPoints()
+                return
+            else:
+                elem.click()
+                time.sleep(search_pause)
+                curr_tab = driver.window_handles[0]
+                new_tab = driver.window_handles[-1]
+                driver.switch_to_window(new_tab)
+                driver.close()
+                driver.switch_to_window(curr_tab)
+                getOfferPoints()
+                return
+    
+def visitPCSearchPage():
+    click(xpath['searchLink'])
+    time.sleep(auth_pause/2)
+
+    # switches focus to the new tab where the search window has opened up
+    new_tab = driver.window_handles[-1]
+    driver.switch_to_window(new_tab)
+
+def visitMobileSearchPage():
+    click(xpath['searchLinkMobile'])
+    time.sleep(auth_pause/2)
+
+def doSearches(num_searches, search_queries):
+    for i in range(0, num_searches):
+        clear(xpath['search'])
+        send(xpath['search'], search_queries.pop())
+        click(xpath['searchButton'])
+        time.sleep(search_pause)
+
+
+# Get search terms
+terms = getRandomQueries(numSearches+numMobileSearches)
+
+# Perform PC searches
+driver = webdriver.Firefox()
+login()
+getOfferPoints()
+visitPCSearchPage()
+doSearches(numSearches, terms)
+driver.close()
+curr_tab = driver.window_handles[0]
+driver.switch_to_window(curr_tab)
 driver.close()
 
-# set up mobile browser
+# Perform Mobile searches
 profile = webdriver.FirefoxProfile()
 profile.set_preference("general.useragent.override", ua_string)
 driver = webdriver.Firefox(profile)
-
-# perform mobile searches
-login(driver)
-mobileTerms = getRandomWords(numMobileSearches)
-for j in range(numMobileSearches):
-    clear(xpaths['search'])
-    send(xpaths['search'], mobileTerms.pop())
-    if j > 0:
-        click(xpaths['searchButton'])
-    time.sleep(search_pause)
+login()
+visitMobileSearchPage()
+doSearches(numMobileSearches, terms)
 driver.close()
