@@ -1,7 +1,20 @@
+## **As of Dec. 27, 2017**
+
+**script correctly handles**
+
+- all quizzes (including drag and drop)
+- all homepage rewards bonuses
+- all pc searches
+- all mobile searches
+
+**script does not handle**
+
+- extra searches on Microsoft Edge
+
 RewardsBot
 ==========
 
-Free Bing Rewards automator built in python using selenium web driver. This is a functional WIP. Currently, it takes arguments such as a username and password (to allow for you to run multiple accounts in a single script). Number of searches is guaranteed to give maximum points daily.
+Free Bing Rewards automator built in python using selenium web driver. It takes arguments such as a username and password (to allow for you to run multiple accounts in a single script).
 
 
 Usage
