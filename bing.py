@@ -21,8 +21,8 @@ from BingSelectors import xpath
 
 numSearches = 30
 numMobileSearches = 20
-authPause = 15
-searchPause = 10
+authPause = 10
+searchPause = 5
 
 parser = argparse.ArgumentParser()
 parser.add_argument("uname")
