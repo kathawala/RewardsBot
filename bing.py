@@ -176,6 +176,7 @@ def get_offer_points():
                 driver.close()
                 driver.switch_to_window(currTab)
                 get_offer_points()
+                return
             else:
                 elem.click()
                 time.sleep(searchPause)
@@ -185,6 +186,7 @@ def get_offer_points():
                 driver.close()
                 driver.switch_to_window(currTab)
                 get_offer_points()
+                return
 
 def visit_PC_search_page():
     click(xpath['searchLink'])
