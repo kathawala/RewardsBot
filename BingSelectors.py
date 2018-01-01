@@ -8,8 +8,8 @@ xpath = { 'signInLink': "//div[contains(@class, 'msame_unauth')]",
           'searchButtonMobile': ".//*[@id='sbBtn']",
 
           # Find a better, more portable way to describe this xpath
-          'searchLink': "//*[@id='offer-evergreen_ENUS_search_level2_PC_DEC17']",
-          'searchLinkMobile': "//*[@id='offer-evergreen_ENUS_search_level2_Mobile_DEC17']",
+          'searchLink': "//*[@id='offer-evergreen_ENUS_search_level2_PC_JAN18']",
+          'searchLinkMobile': "//*[@id='offer-evergreen_ENUS_search_level2_Mobile_JAN18']",
           'startQuizButton': "//*[@id='rqStartQuiz']",
           'draggableQuizBox': "//*[@id='dragOptionContainer']",
           'allDragAnswers': "//*[contains(@class, 'rqDragOption')]",

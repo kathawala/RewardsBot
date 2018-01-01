@@ -197,7 +197,8 @@ def visit_PC_search_page():
     driver.switch_to_window(newTab)
 
 def visit_mobile_search_page():
-    click(xpath['searchLinkMobile'])
+    # click(xpath['searchLinkMobile'])
+    click(xpath['searchLink'])    
     time.sleep(authPause/2)
 
 def do_searches(numSearches, searchQuries):
